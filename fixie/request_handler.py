@@ -14,10 +14,10 @@ class RequestHandler(tornado.web.RequestHandler):
 
     @property
     def validator(self):
-        v = getattr(self.__class__, 'validator', None)
+        v = getattr(self.__class__, '_validator', None)
         if v is None:
             v = cerberus.Validator(self.schema)
-            self.__class__.validator = v
+            self.__class__._validator = v
         return v
 
     def prepare(self):
@@ -31,7 +31,7 @@ class RequestHandler(tornado.web.RequestHandler):
             self.send_error(400, message='Unable to parse JSON.')
             return
         if not self.validator.validate(data):
-            msg = 'Input to ' + self.__class__.__name__ ' is not valid: '
+            msg = 'Input to ' + self.__class__.__name__ + ' is not valid: '
             msg += str(self.validator.errors)
             self.send_error(400, message=msg)
             return
@@ -49,5 +49,3 @@ class RequestHandler(tornado.web.RequestHandler):
                 kwargs['message'] = 'Unknown error.'
         self.response = kwargs
         self.write(kwargs)
-
-
