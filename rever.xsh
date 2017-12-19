@@ -4,7 +4,7 @@ $GITHUB_ORG = 'ergs'
 $ACTIVITIES = ['pytest', 'version_bump', 'changelog', 'tag', 'push_tag', 'pypi', 'ghrelease']
 
 $VERSION_BUMP_PATTERNS = [
-    ('setup.py', 'VERSION\s*=.*', "__version__ = '$VERSION'"),
+    ('setup.py', 'VERSION\s*=.*', "VERSION = '$VERSION'"),
     ('fixie/__init__.py', '__version__\s*=.*', "__version__ = '$VERSION'"),
     ]
 $CHANGELOG_FILENAME = 'CHANGELOG.rst'
