@@ -1,9 +1,6 @@
-"""Custom environment handling tools for rever."""
+"""Custom environment handling tools for fixie."""
 import os
-import re
-import sys
 import builtins
-from ast import literal_eval
 from contextlib import contextmanager
 from collections.abc import MutableMapping
 

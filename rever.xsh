@@ -10,5 +10,5 @@ $VERSION_BUMP_PATTERNS = [
 $CHANGELOG_FILENAME = 'CHANGELOG.rst'
 $CHANGELOG_TEMPLATE = 'TEMPLATE.rst'
 
-$DOCKER_CONDA_DEPS = ['cerberus', 'pytest', 'tornado', 'pytest-tornado']
+$DOCKER_CONDA_DEPS = ['xonsh', 'cerberus', 'pytest', 'tornado', 'pytest-tornado']
 $DOCKER_INSTALL_COMMAND = 'git clean -fdx && ./setup.py install'
