@@ -40,8 +40,17 @@ def expand_file_and_mkdirs(x):
     directory it lives in actually exists.
     """
     x = expand_path(x)
-    d = os.path.dirname(d)
+    d = os.path.dirname(x)
     os.makedirs(d, exist_ok=True)
+    return x
+
+
+def expand_and_make_dir(x):
+    """Expands a variable that represents a directory, and ensures that the
+    directory actually exists.
+    """
+    x = expand_path(x)
+    os.makedirs(x, exist_ok=True)
     return x
 
 

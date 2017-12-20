@@ -1,4 +1,4 @@
-"""Logging tools for rever"""
+"""Logging tools for fixie"""
 import os
 import json
 import time
@@ -9,7 +9,7 @@ from fixie.environ import ENV, expand_file_and_mkdirs
 
 
 class Logger:
-    """A logging object for rever that stores information in line-oriented JSON
+    """A logging object for fixie that stores information in line-oriented JSON
     format.
     """
 
@@ -29,7 +29,6 @@ class Logger:
             Path to logfile, if None, defaults to $FIXIE_LOGFILE.
         """
         self._filename = None
-        self._argparser = None
         self.filename = filename
         self._dirty = True
         self._cached_entries = ()
