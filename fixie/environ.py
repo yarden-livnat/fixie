@@ -120,5 +120,5 @@ def fixie_detype_env():
     environment variables.
     """
     keep = fixie_envvar_names()
-    denv = {k: v for k, v in ${...}.detype().items() if k in keep}
+    denv = {k: v for k, v in ENV.detype().items() if k in keep}
     return denv
