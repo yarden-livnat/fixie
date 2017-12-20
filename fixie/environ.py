@@ -75,7 +75,7 @@ ENVVARS = {
                          'Path to fixie configuration directory'),
     'FIXIE_DATA_DIR': (fixie_config_dir, is_string, str, ensure_string,
                        'Path to fixie data directory'),
-    'FIXIE_LOGFILE': (fixie_logfile, always_false, expand_and_mkdirs, ensure_string,
+    'FIXIE_LOGFILE': (fixie_logfile, always_false, expand_file_and_mkdirs, ensure_string,
                       'Path to the fixie logfile.')
     }
 
