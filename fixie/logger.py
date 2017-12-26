@@ -2,6 +2,7 @@
 import os
 import json
 import time
+from collections.abc import Set
 
 from xonsh.tools import print_color
 
@@ -45,7 +46,8 @@ class Logger:
 
         # write to log file
         with open(self.filename, 'a+') as f:
-            json.dump(entry, f, sort_keys=True, separators=(',', ':'))
+            json.dump(entry, f, sort_keys=True, separators=(',', ':'),
+                      default=self.json_encode)
             f.write('\n')
         # write to stdout
         msg = '{INTENSE_CYAN}' + category + '{PURPLE}:'
@@ -61,10 +63,22 @@ class Logger:
         if not self._dirty:
             return self._cached_entries
         with open(self.filename) as f:
-            entries = [json.loads(line) for line in f]
+            entries = [json.loads(line, object_hook=self.json_decode) for line in f]
         self._dirty = False
         self._cached_entries = entries
         return entries
+
+    @staticmethod
+    def json_encode(obj):
+        if isinstance(obj, Set):
+            return {'__set__': True, 'elements': sorted(obj)}
+        raise TypeError(repr(obj) + " is not JSON serializable")
+
+    @staticmethod
+    def json_decode(dct):
+        if '__set__' in dct:
+            return set(dct['elements'])
+        return dct
 
     @property
     def filename(self):

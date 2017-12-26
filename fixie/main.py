@@ -19,7 +19,7 @@ def parse_services(args):
     services = set(args) & ALL_SERVICES
     if len(services) == 0:
         services = {'all'}
-    if 'all' in services
+    if 'all' in services:
         services = set(SERVICES)
     return services
 
@@ -32,10 +32,8 @@ def load_services(services):
         try:
             importlib.import_module(name)
             loaded.add(service)
-            LOGGER.log('loaded service: ' + name, category='load')
         except ImportError as e:
             msg = 'failed to load fixie service: ' + name
-            LOGGER.log(msg, category='error-load', data=str(e))
     return loaded
 
 
@@ -56,18 +54,18 @@ NotGiven = NotGivenType()
 def make_parser():
     """Makes and argument parser for fixie."""
     p = argparse.ArgumentParser('fixie', description='Cyclus-as-a-Service')
-    for name, (default, validate, convert, detype, docstr) in ENVVARS.items():
-        dest = name
-        if name.startwith('FIXIE_'):
-            name = name[6:]
-        name = '--' + name.lower().replace('_', '-')
-        p.add_argument(name, default=NotGiven, type=cponvert,
-                       dest=dest, help=docstr)
     p.add_argument('-p', '--port', default=8642, dest='port', type=int,
                    help='port to serve the fixie services on.')
+    for name, (default, validate, convert, detype, docstr) in ENVVARS.items():
+        dest = name
+        if name.startswith('FIXIE_'):
+            name = name[6:]
+        name = '--' + name.lower().replace('_', '-')
+        p.add_argument(name, default=NotGiven, type=convert,
+                       dest=dest, help=docstr)
     p.add_argument('services', nargs='+', default=['all'],
-                   help='the services to start, may be all to specify all '
-                        'services.')
+                   help='the services to start, may be "all" to specify all '
+                        'services. Allowed values are: ' + ', '.join(sorted(ALL_SERVICES)))
     return p
 
 
@@ -91,11 +89,15 @@ def run_application(ns):
         handlers.extend(mod.HANDLERS)
     # construct the app
     app = tornado.web.Application(handlers)
-    app.listen(ns.port)
+    serv = app.listen(ns.port)
     data = vars(ns)
-    LOGGER.log('starting', category='server', data=data)
-    tornado.ioloop.IOLoop.current().start()
-    LOGGER.log('stopping', category='server', data=data)
+    url = 'http://localhost:' + str(ns.port)
+    LOGGER.log('starting fixie ' + url, category='server', data=data)
+    try:
+        tornado.ioloop.IOLoop.current().start()
+    except KeyboardInterrupt:
+        print()
+    LOGGER.log('stopping fixie ' + url, category='server', data=data)
 
 
 def main(args=None):
@@ -107,7 +109,7 @@ def main(args=None):
         ns = p.parse_args(args)
         ns.args = args
         ns.services = services
-        load_envvars(ns)
+        set_envvars(ns)
         run_application(ns)
 
 
