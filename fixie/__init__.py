@@ -21,7 +21,7 @@ else:
     del xonsh, builtins, Execer, Shell
 
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 
 from fixie.request_handler import RequestHandler
