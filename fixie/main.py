@@ -65,7 +65,8 @@ def make_parser():
                        dest=dest, help=docstr)
     p.add_argument('services', nargs='+', default=['all'],
                    help='the services to start, may be "all" to specify all '
-                        'services. Allowed values are: ' + ', '.join(sorted(ALL_SERVICES)))
+                        'installed services. Default is "all" '
+                        'Allowed values are: ' + ', '.join(sorted(ALL_SERVICES)))
     return p
 
 
