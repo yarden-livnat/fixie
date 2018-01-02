@@ -11,6 +11,8 @@ from xonsh.tools import (is_string, ensure_string, always_false, always_true, is
 
 
 ENV = builtins.__xonsh_env__
+SERVICES = frozenset(['creds'])
+
 
 def csv_to_list(x):
     """Converts a comma separated string to a list of strings."""
@@ -84,6 +86,12 @@ ENVVARS = {
     'FIXIE_LOGFILE': (fixie_logfile, always_false, expand_file_and_mkdirs, ensure_string,
                       'Path to the fixie logfile.')
     }
+for service in SERVICES:
+    key = 'FIXIE_' + service.upper() + '_URL'
+    ENVVARS[key] = ('', is_string, str, ensure_string,
+                    'Base URL for ' + service + ' service, default is an empty '
+                    'string indicating service is provided locally (if available).')
+del service, key
 
 
 def setup():

@@ -6,11 +6,10 @@ import importlib
 import tornado.web
 import tornado.ioloop
 
-from fixie.environ import ENV, ENVVARS, context
+from fixie.environ import ENV, ENVVARS, SERVICES, context
 from fixie.logger import LOGGER
 
 
-SERVICES = frozenset(['creds'])
 ALL_SERVICES = SERVICES | frozenset(['all'])
 
 

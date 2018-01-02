@@ -27,7 +27,8 @@ setup_kwargs = {
     "data_files": [("", ['LICENSE', 'README.rst']),],
     "scripts": ["scripts/fixie"],
     }
-
+if HAVE_SETUPTOOLS:
+    setup_kwargs['install_requires'] = ['xonsh', 'cerberus', 'tornado', 'lazyasd']
 
 if __name__ == '__main__':
     setup(
