@@ -28,3 +28,4 @@ import fixie.jsonutils as json
 from fixie.logger import LOGGER
 from fixie.environ import ENV, ENVVARS
 from fixie.request_handler import RequestHandler
+from fixie.tools import fetch, verify_user
