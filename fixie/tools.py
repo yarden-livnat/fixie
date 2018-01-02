@@ -1,5 +1,6 @@
 """Various helper tools for fixie services."""
 import tornado.gen
+import tornado.ioloop
 from tornado.httpclient import AsyncHTTPClient
 from lazyasd import lazyobject
 
@@ -17,6 +18,7 @@ def fetch(url, obj):
     body = json.encode(obj)
     http_client = AsyncHTTPClient()
     response = yield http_client.fetch(url, method='POST', body=body)
+    assert response.code == 200
     rtn = json.decode(response.body)
     return rtn
 
@@ -33,10 +35,10 @@ def verify_user_local(user, token):
 
 
 def verify_user_remote(user, token, base_url):
-    """Verifies a user via a remote credetialling service."""
+    """Verifies a user via a remote credentialling service. This runs syncronously."""
     url = base_url + '/verify'
     body = {'user': user, 'token': token}
-    rtn = fetch(url, body)
+    rtn = tornado.ioloop.IOLoop.current().run_sync(lambda: fetch(url, body))
     return rtn['verified'], rtn['message'], rtn['status']
 
 

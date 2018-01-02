@@ -1,8 +1,9 @@
 """A request handler for fixie that expects JSON data and validates it."""
 
 import tornado.web
-import tornado.escape
 import cerberus
+
+import fixie.jsonutils as json
 
 
 class RequestHandler(tornado.web.RequestHandler):
@@ -26,7 +27,7 @@ class RequestHandler(tornado.web.RequestHandler):
         if not body:
             return
         try:
-            data = tornado.escape.json_decode(body)
+            data = json.decode(body)
         except ValueError:
             self.send_error(400, message='Unable to parse JSON.')
             return
