@@ -76,6 +76,12 @@ def fixie_logfile():
     return flf
 
 
+def fixie_jobfile():
+    fjf = os.path.join(ENV.get('XDG_DATA_HOME'), 'fixie', 'jobid')
+    fjf = expand_file_and_mkdirs(fjf)
+    return fjf
+
+
 # key = name
 # value = (default, validate, convert, detype, docstr)
 ENVVARS = {
@@ -83,8 +89,10 @@ ENVVARS = {
                          'Path to fixie configuration directory'),
     'FIXIE_DATA_DIR': (fixie_config_dir, is_string, str, ensure_string,
                        'Path to fixie data directory'),
+    'FIXIE_JOBFILE': (fixie_jobfile, always_false, expand_file_and_mkdirs, ensure_string,
+                      'Path to the fixie job file, which contains the next jobid.'),
     'FIXIE_LOGFILE': (fixie_logfile, always_false, expand_file_and_mkdirs, ensure_string,
-                      'Path to the fixie logfile.')
+                      'Path to the fixie logfile.'),
     }
 for service in SERVICES:
     key = 'FIXIE_' + service.upper() + '_URL'

@@ -1,4 +1,9 @@
 """Various helper tools for fixie services."""
+import os
+import time
+import errno
+from contextlib import contextmanager
+
 import tornado.gen
 import tornado.ioloop
 from tornado.httpclient import AsyncHTTPClient
@@ -51,3 +56,57 @@ def verify_user(user, token, url=None):
         return verify_user(user, token, url)
     else:
         return verify_user_local(user, token)
+
+
+@contextmanager
+def flock(filename, timeout=None, sleepfor=0.1, raise_errors=True):
+    """A context manager for locking a file via the filesystem.
+    This yeilds the file descriptor of the lockfile.
+    If raise_errors is False and an exception would have been raised,
+    a file descriptor of zero is yielded instead.
+    """
+    fd = 0
+    lockfile = filename + '.lock'
+    t0 = time.time()
+    while True:
+        try:
+            fd = os.open(lockfile, os.O_CREAT|os.O_EXCL|os.O_RDWR)
+            break
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                if raise_errors:
+                    raise
+                else:
+                    break
+            elif (time.time() - t0) >= timeout:
+                if raise_errors:
+                    raise TimeoutError(lockfile + " could not be obtained in time.")
+                else:
+                    break
+            time.sleep(sleepfor)
+    yield fd
+    if fd == 0:
+        return
+    os.close(fd)
+    os.unlink(lockfile)
+
+
+def next_jobid(timeout=None, sleepfor=0.1, raise_errors=True):
+    """Obtains the next jobid from the $FIXIE_JOBFILE and increments the
+    value in $FIXIE_JOBFILE. A None value means that the jobid could not
+    be obtained in time.
+    """
+    f = ENV['FIXIE_JOBFILE']
+    with flock(f, timeout=timeout, sleepfor=sleepfor, raise_errors=raise_errors) as lockfd:
+        if lockfd == 0:
+            return
+        if os.path.isfile(f):
+            with open(f) as fh:
+                curr = fh.read()
+            curr = int(curr.strip() or 0)
+        else:
+            curr = 0
+        inc = str(curr + 1)
+        with open(f, 'w') as fh:
+            fh.write(inc)
+    return curr
