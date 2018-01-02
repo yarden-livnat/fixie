@@ -7,6 +7,9 @@
 
 **Changed:** None
 
+* ``ENVVARS`` is now an OrderedDict, in order to apply defaults in the
+  correct order.
+
 **Deprecated:** None
 
 **Removed:** None

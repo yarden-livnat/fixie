@@ -92,11 +92,11 @@ def flock(filename, timeout=None, sleepfor=0.1, raise_errors=True):
 
 
 def next_jobid(timeout=None, sleepfor=0.1, raise_errors=True):
-    """Obtains the next jobid from the $FIXIE_JOBFILE and increments the
-    value in $FIXIE_JOBFILE. A None value means that the jobid could not
+    """Obtains the next jobid from the $FIXIE_JOBID_FILE and increments the
+    value in $FIXIE_JOBID_FILE. A None value means that the jobid could not
     be obtained in time.
     """
-    f = ENV['FIXIE_JOBFILE']
+    f = ENV['FIXIE_JOBID_FILE']
     with flock(f, timeout=timeout, sleepfor=sleepfor, raise_errors=raise_errors) as lockfd:
         if lockfd == 0:
             return

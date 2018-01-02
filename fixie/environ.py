@@ -2,6 +2,7 @@
 import os
 import builtins
 from contextlib import contextmanager
+from collections import OrderedDict
 from collections.abc import MutableMapping
 
 from xonsh.environ import Ensurer, VarDocs
@@ -71,29 +72,41 @@ def fixie_data_dir():
 
 
 def fixie_logfile():
-    flf = os.path.join(ENV.get('XDG_DATA_HOME'), 'fixie', 'log.json')
+    flf = os.path.join(ENV.get('FIXIE_DATA_DIR'), 'log.json')
     flf = expand_file_and_mkdirs(flf)
     return flf
 
 
-def fixie_jobfile():
-    fjf = os.path.join(ENV.get('XDG_DATA_HOME'), 'fixie', 'jobid')
+def fixie_jobs_dir():
+    """Ensures and returns the $FIXIE_JOBS_DIR"""
+    fjd = os.path.expanduser(os.path.join(ENV.get('FIXIE_DATA_DIR'), 'jobs'))
+    os.makedirs(fjd, exist_ok=True)
+    return fjd
+
+
+def fixie_jobid_file():
+    fjf = os.path.join(ENV.get('FIXIE_JOBS_DIR'), 'id')
     fjf = expand_file_and_mkdirs(fjf)
     return fjf
 
 
+
+
 # key = name
 # value = (default, validate, convert, detype, docstr)
-ENVVARS = {
-    'FIXIE_CONFIG_DIR': (fixie_config_dir, is_string, str, ensure_string,
-                         'Path to fixie configuration directory'),
-    'FIXIE_DATA_DIR': (fixie_config_dir, is_string, str, ensure_string,
-                       'Path to fixie data directory'),
-    'FIXIE_JOBFILE': (fixie_jobfile, always_false, expand_file_and_mkdirs, ensure_string,
-                      'Path to the fixie job file, which contains the next jobid.'),
-    'FIXIE_LOGFILE': (fixie_logfile, always_false, expand_file_and_mkdirs, ensure_string,
-                      'Path to the fixie logfile.'),
-    }
+# this needs to be ordered so that the default are applied in the correct order
+ENVVARS = OrderedDict([
+    ('FIXIE_CONFIG_DIR', (fixie_config_dir, is_string, str, ensure_string,
+                          'Path to fixie configuration directory')),
+    ('FIXIE_DATA_DIR', (fixie_config_dir, is_string, str, ensure_string,
+                       'Path to fixie data directory')),
+    ('FIXIE_JOBS_DIR', (fixie_jobs_dir, is_string, str, ensure_string,
+                        'Path to fixie jobs directory')),
+    ('FIXIE_JOBID_FILE', (fixie_jobid_file, always_false, expand_file_and_mkdirs, ensure_string,
+                          'Path to the fixie job file, which contains the next jobid.')),
+    ('FIXIE_LOGFILE', (fixie_logfile, always_false, expand_file_and_mkdirs, ensure_string,
+                       'Path to the fixie logfile.')),
+    ])
 for service in SERVICES:
     key = 'FIXIE_' + service.upper() + '_URL'
     ENVVARS[key] = ('', is_string, str, ensure_string,
