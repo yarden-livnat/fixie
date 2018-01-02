@@ -102,7 +102,13 @@ for service in SERVICES:
 del service, key
 
 
+_ENV_SETUP = False
+
+
 def setup():
+    global _ENV_SETUP
+    if _ENV_SETUP:
+        return
     for key, (default, validate, convert, detype, docstr) in ENVVARS.items():
         if key in ENV:
             del ENV[key]
@@ -110,22 +116,31 @@ def setup():
         ENV._ensurers[key] = Ensurer(validate=validate, convert=convert,
                                      detype=detype)
         ENV._docs[key] = VarDocs(docstr=docstr)
+    _ENV_SETUP = True
 
 
 def teardown():
+    global _ENV_SETUP
+    if not _ENV_SETUP:
+        return
     for key in ENVVARS:
         ENV._defaults.pop(key)
         ENV._ensurers.pop(key)
         ENV._docs.pop(key)
         if key in ENV:
             del ENV[key]
+    _ENV_SETUP = False
 
 
 @contextmanager
 def context():
     """A context manager for entering and leaving the fixie environment
-    safely.
+    safely. This context manager is reentrant and will only be executed
+    if it hasn't already been entered.
     """
+    global _ENV_SETUP
+    if _ENV_SETUP:
+        return
     setup()
     yield
     teardown()
