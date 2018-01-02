@@ -44,6 +44,6 @@ def jobfile(request):
     credsdir = os.path.join(tempfile.gettempdir(), name)
     with environ.context(), tempfile.NamedTemporaryFile() as f:
         name = f.name
-        orig, ENV['FIXIE_JOBFILE'] = ENV['FIXIE_JOBFILE'], name
+        orig, ENV['FIXIE_JOBID_FILE'] = ENV['FIXIE_JOBID_FILE'], name
         yield name
-        ENV['FIXIE_JOBFILE'] = orig
+        ENV['FIXIE_JOBID_FILE'] = orig
