@@ -1,12 +1,12 @@
 """Logging tools for fixie"""
 import os
-import json
 import time
 from collections.abc import Set
 
 from xonsh.tools import print_color
 
 from fixie.environ import ENV, expand_file_and_mkdirs
+import fixie.jsonutils as json
 
 
 class Logger:
@@ -45,10 +45,7 @@ class Logger:
             entry['data'] = data
 
         # write to log file
-        with open(self.filename, 'a+') as f:
-            json.dump(entry, f, sort_keys=True, separators=(',', ':'),
-                      default=self.json_encode)
-            f.write('\n')
+        json.appendline(entry, self.filename)
         # write to stdout
         msg = '{INTENSE_CYAN}' + category + '{PURPLE}:'
         msg += '{INTENSE_WHITE}' + message + '{NO_COLOR}'
@@ -62,23 +59,10 @@ class Logger:
             return []
         if not self._dirty:
             return self._cached_entries
-        with open(self.filename) as f:
-            entries = [json.loads(line, object_hook=self.json_decode) for line in f]
+        entries = json.loadlines(self.filename)
         self._dirty = False
         self._cached_entries = entries
         return entries
-
-    @staticmethod
-    def json_encode(obj):
-        if isinstance(obj, Set):
-            return {'__set__': True, 'elements': sorted(obj)}
-        raise TypeError(repr(obj) + " is not JSON serializable")
-
-    @staticmethod
-    def json_decode(dct):
-        if '__set__' in dct:
-            return set(dct['elements'])
-        return dct
 
     @property
     def filename(self):

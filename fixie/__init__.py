@@ -24,6 +24,7 @@ else:
 __version__ = '0.0.2'
 
 
-from fixie.request_handler import RequestHandler
-from fixie.environ import ENV
+import fixie.jsonutils as json
 from fixie.logger import LOGGER
+from fixie.environ import ENV, ENVVARS
+from fixie.request_handler import RequestHandler
