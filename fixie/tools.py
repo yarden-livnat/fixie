@@ -121,6 +121,8 @@ def detached_call(args, stdout=None, stderr=None, stdin=None, env=None, **kwargs
     environment is not provided, the current fixie environment is passed in.
     If close_fds is provided, it must be True.
     All other kwargs are passed through to Popen.
+
+    Inspired by detach.call(), Copyright (c) 2014 Ryan Bourgeois.
     """
     env = ENV.detype() if env is None else env
     stdin = os.open(os.devnull, os.O_RDONLY) if stdin is None else stdin
