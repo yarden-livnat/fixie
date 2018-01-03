@@ -143,3 +143,26 @@ def detached_call(args, stdout=None, stderr=None, stdin=None, env=None, **kwargs
         child_pid = shared_pid.value
         del shared_pid
         return child_pid
+
+
+def waitpid(pid, timeout=None, sleepfor=0.001, raise_errors=True):
+    """Waits for a PID, even if if it isn't a child of the current process.
+    Returns a boolean flag for whether the waiting was successfull or not.
+    """
+    rtn = False
+    t0 = time.time()
+    while True:
+        try:
+            os.kill(pid, 0)
+        except OSError as e:
+            if e.errno != errno.EPERM:
+                rtn = True
+                break
+        if timeout is not None and (time.time() - t0) >= timeout:
+            if raise_errors:
+                raise TimeoutError('wait time for PID exceeded')
+            else:
+                rtn = False
+                break
+        time.sleep(sleepfor)
+    return rtn
