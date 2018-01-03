@@ -90,6 +90,11 @@ def fixie_jobid_file():
     return fjf
 
 
+def fixie_sims_dir():
+    """Ensures and returns the $FIXIE_SIMS_DIR"""
+    fsd = os.path.expanduser(os.path.join(ENV.get('FIXIE_DATA_DIR'), 'sims'))
+    os.makedirs(fsd, exist_ok=True)
+    return fsd
 
 
 # key = name
@@ -106,6 +111,8 @@ ENVVARS = OrderedDict([
                           'Path to the fixie job file, which contains the next jobid.')),
     ('FIXIE_LOGFILE', (fixie_logfile, always_false, expand_file_and_mkdirs, ensure_string,
                        'Path to the fixie logfile.')),
+    ('FIXIE_SIMS_DIR', (fixie_sims_dir, is_string, str, ensure_string,
+                        'Path to fixie simulations directory')),
     ])
 for service in SERVICES:
     key = 'FIXIE_' + service.upper() + '_URL'
