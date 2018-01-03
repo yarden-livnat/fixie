@@ -80,7 +80,7 @@ def fixie_logfile():
 
 def fixie_jobs_dir():
     """Ensures and returns the $FIXIE_JOBS_DIR"""
-    fjd = os.path.expanduser(os.path.join(ENV.get('FIXIE_DATA_DIR'), 'jobs'))
+    fjd = os.path.join(ENV.get('FIXIE_DATA_DIR'), 'jobs')
     os.makedirs(fjd, exist_ok=True)
     return fjd
 
@@ -94,7 +94,7 @@ def fixie_jobid_file():
 
 def fixie_sims_dir():
     """Ensures and returns the $FIXIE_SIMS_DIR"""
-    fsd = os.path.expanduser(os.path.join(ENV.get('FIXIE_DATA_DIR'), 'sims'))
+    fsd = os.path.join(ENV.get('FIXIE_DATA_DIR'), 'sims')
     os.makedirs(fsd, exist_ok=True)
     return fsd
 
@@ -105,7 +105,7 @@ def fixie_sims_dir():
 ENVVARS = OrderedDict([
     ('FIXIE_CONFIG_DIR', (fixie_config_dir, is_string, str, ensure_string,
                           'Path to fixie configuration directory')),
-    ('FIXIE_DATA_DIR', (fixie_config_dir, is_string, str, ensure_string,
+    ('FIXIE_DATA_DIR', (fixie_data_dir, is_string, str, ensure_string,
                        'Path to fixie data directory')),
     ('FIXIE_JOBS_DIR', (fixie_jobs_dir, is_string, str, ensure_string,
                         'Path to fixie jobs directory')),
