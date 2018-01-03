@@ -1,14 +1,17 @@
 """Tests request handler object."""
 import os
+import time
+import tempfile
 
 import pytest
 import tornado.web
 from tornado.httpclient import HTTPError
 
 import fixie.jsonutils as json
+from fixie.environ import ENV
 from fixie.request_handler import RequestHandler
 from fixie.tools import (fetch, verify_user_remote, verify_user_local, flock,
-    next_jobid)
+    next_jobid, detached_call)
 try:
     from fixie_creds.cache import CACHE
     HAVE_CREDS = True
@@ -119,3 +122,13 @@ def test_next_jobid(jobfile):
         n = f.read()
     n = int(n.strip())
     assert 3 == n
+
+
+def test_detached_call():
+    with ENV.swap(FIXIE_DETACHED_CALL='test'), tempfile.NamedTemporaryFile('w+t') as f:
+        child_pid = detached_call(['env'], stdout=f)
+        time.sleep(0.001)
+        f.seek(0)
+        s = f.read()
+    assert os.getpid() != child_pid
+    assert 'FIXIE_DETACHED_CALL=test' in s
