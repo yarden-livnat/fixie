@@ -11,7 +11,7 @@ import fixie.jsonutils as json
 from fixie.environ import ENV
 from fixie.request_handler import RequestHandler
 from fixie.tools import (fetch, verify_user_remote, verify_user_local, flock,
-    next_jobid, detached_call, waitpid)
+    next_jobid, detached_call, waitpid, register_job_alias, jobids_from_alias)
 try:
     from fixie_creds.cache import CACHE
     HAVE_CREDS = True
@@ -124,6 +124,15 @@ def test_next_jobid(jobfile):
     assert 3 == n
 
 
+def test_job_aliases(jobaliases):
+    register_job_alias(1, 'me', name='some-sim', project='myproj')
+    register_job_alias(42, 'me', name='some-sim', project='myproj')
+    jids = jobids_from_alias('me', name='some-sim', project='myproj')
+    assert jids == {1, 42}
+    jids = jobids_from_alias('me', name='bad', project='nope')
+    assert jids == set()
+
+
 def test_detached_call():
     with ENV.swap(FIXIE_DETACHED_CALL='test'), tempfile.NamedTemporaryFile('w+t') as f:
         child_pid = detached_call(['env'], stdout=f)
@@ -133,3 +142,5 @@ def test_detached_call():
     assert status
     assert os.getpid() != child_pid
     assert 'FIXIE_DETACHED_CALL=test' in s
+
+

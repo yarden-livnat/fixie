@@ -40,9 +40,19 @@ def credsdir(seed42):
 def jobfile(request):
     """A fixure that creates a temporary jobs file and assigns it in the environment.
     """
-    name = request.node.name
     with environ.context(), tempfile.NamedTemporaryFile() as f:
         name = f.name
         orig, ENV['FIXIE_JOBID_FILE'] = ENV['FIXIE_JOBID_FILE'], name
         yield name
         ENV['FIXIE_JOBID_FILE'] = orig
+
+
+@pytest.fixture
+def jobaliases(request):
+    """A fixure that creates a temporary jobs aliases file and assigns it in the environment.
+    """
+    with environ.context(), tempfile.NamedTemporaryFile() as f:
+        name = f.name
+        orig, ENV['FIXIE_JOB_ALIASES_FILE'] = ENV['FIXIE_JOB_ALIASES_FILE'], name
+        yield name
+        ENV['FIXIE_JOB_ALIASES_FILE'] = orig

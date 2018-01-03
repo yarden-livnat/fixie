@@ -114,6 +114,69 @@ def next_jobid(timeout=None, sleepfor=0.1, raise_errors=True):
     return curr
 
 
+def register_job_alias(jobid, user, name='', project='', timeout=None, sleepfor=0.1,
+                      raise_errors=True):
+    """Registers a job id, user, name, and project in the global jobs alias cache.
+    Returns whether the registration was successful or not.
+    """
+    f = ENV['FIXIE_JOB_ALIASES_FILE']
+    with flock(f, timeout=timeout, sleepfor=sleepfor, raise_errors=raise_errors) as lockfd:
+        if lockfd == 0:
+            return False
+        # obtain the current contents
+        if os.path.isfile(f):
+            with open(f) as fh:
+                s = fh.read()
+            if s.strip():
+                cache = json.loads(s)
+            else:
+                cache = {}
+        else:
+            cache = {}
+        # add the entry as approriate
+        if user not in cache:
+            cache[user] = {}
+        u = cache[user]
+        if project not in u:
+            u[project] = {}
+        p = u[project]
+        if name not in p:
+            p[name] = set()
+        p[name].add(jobid)
+        # write the file back out
+        with open(f, 'w') as fh:
+            json.dump(cache, fh)
+    return True
+
+
+def jobids_from_alias(user, name='', project='', timeout=None, sleepfor=0.1,
+                    raise_errors=True):
+    """Obtains a set of job ids from user, name, and project informnation.
+    This looks up information in the the global jobs alias cache.
+    Returns a set of jobids.
+    """
+    f = ENV['FIXIE_JOB_ALIASES_FILE']
+    with flock(f, timeout=timeout, sleepfor=sleepfor, raise_errors=raise_errors) as lockfd:
+        if lockfd == 0:
+            return set()
+        # obtain the current contents
+        if os.path.isfile(f):
+            with open(f) as fh:
+                cache = json.load(fh)
+        else:
+            return set()
+        # add the entry as approriate
+        if user not in cache:
+            return set()
+        u = cache[user]
+        if project not in u:
+            return set()
+        p = u[project]
+        if name not in p:
+            return set()
+        return p[name]
+
+
 def detached_call(args, stdout=None, stderr=None, stdin=None, env=None, **kwargs):
     """Runs a process and detaches it from its parent (i.e. the current process).
     In the parent process, this will return the PID of the child. By default,

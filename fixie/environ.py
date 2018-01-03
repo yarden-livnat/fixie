@@ -93,6 +93,13 @@ def fixie_jobid_file():
     return fjf
 
 
+def fixie_job_aliases_file():
+    """Ensures and returns the $FIXIE_JOB_ALIASES_FILE"""
+    fjf = os.path.join(ENV.get('FIXIE_JOBS_DIR'), 'aliases.json')
+    fjf = expand_file_and_mkdirs(fjf)
+    return fjf
+
+
 def fixie_sims_dir():
     """Ensures and returns the $FIXIE_SIMS_DIR"""
     fsd = os.path.join(ENV.get('FIXIE_DATA_DIR'), 'sims')
@@ -112,6 +119,10 @@ ENVVARS = OrderedDict([
                         'Path to fixie jobs directory')),
     ('FIXIE_JOBID_FILE', (fixie_jobid_file, always_false, expand_file_and_mkdirs, ensure_string,
                           'Path to the fixie job file, which contains the next jobid.')),
+    ('FIXIE_JOB_ALIASES_FILE', (fixie_job_aliases_file, always_false,
+                                expand_file_and_mkdirs, ensure_string,
+                                'Path to the fixie job names file, which contains '
+                                'aliases associated with users, projects, and jobids.')),
     ('FIXIE_NJOBS', (multiprocessing.cpu_count(), is_int, int, ensure_string,
                      'Number of jobs allowed in parallel on this server.')),
     ('FIXIE_LOGFILE', (fixie_logfile, always_false, expand_file_and_mkdirs, ensure_string,
