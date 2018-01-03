@@ -2,6 +2,8 @@
 import os
 import time
 import errno
+import subprocess
+import multiprocessing
 from contextlib import contextmanager
 
 import tornado.gen
@@ -110,3 +112,34 @@ def next_jobid(timeout=None, sleepfor=0.1, raise_errors=True):
         with open(f, 'w') as fh:
             fh.write(inc)
     return curr
+
+
+def detached_call(args, stdout=None, stderr=None, stdin=None, env=None, **kwargs):
+    """Runs a process and detaches it from its parent (i.e. the current process).
+    In the parent process, this will return the PID of the child. By default,
+    this will return redirect all streams to os.devnull. Additionally, if an
+    environment is not provided, the current fixie environment is passed in.
+    If close_fds is provided, it must be True.
+    All other kwargs are passed through to Popen.
+    """
+    env = ENV.detype() if env is None else env
+    stdin = os.open(os.devnull, os.O_RDONLY) if stdin is None else stdin
+    stdout = os.open(os.devnull, os.O_WRONLY) if stdout is None else stdout
+    stderr = os.open(os.devnull, os.O_WRONLY) if stderr is None else stderr
+    if not kwargs.get('close_fds', True):
+        raise RuntimeError('close_fds must be True.')
+    shared_pid = multiprocessing.Value('i', 0)
+    pid = os.fork()
+    if pid == 0:
+        # in child
+        os.setsid()
+        proc = subprocess.Popen(args, stdout=stdout, stderr=stderr, stdin=stdin,
+                                close_fds=True, env=env)
+        shared_pid.value = proc.pid
+        os._exit(0)
+    else:
+        # in parent
+        os.waitpid(pid, 0)
+        child_pid = shared_pid.value
+        del shared_pid
+        return child_pid
