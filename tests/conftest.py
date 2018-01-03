@@ -41,7 +41,6 @@ def jobfile(request):
     """A fixure that creates a temporary jobs file and assigns it in the environment.
     """
     name = request.node.name
-    credsdir = os.path.join(tempfile.gettempdir(), name)
     with environ.context(), tempfile.NamedTemporaryFile() as f:
         name = f.name
         orig, ENV['FIXIE_JOBID_FILE'] = ENV['FIXIE_JOBID_FILE'], name

@@ -72,6 +72,7 @@ def fixie_data_dir():
 
 
 def fixie_logfile():
+    """Ensures and returns the $FIXIE_LOGFILE"""
     flf = os.path.join(ENV.get('FIXIE_DATA_DIR'), 'log.json')
     flf = expand_file_and_mkdirs(flf)
     return flf
@@ -85,6 +86,7 @@ def fixie_jobs_dir():
 
 
 def fixie_jobid_file():
+    """Ensures and returns the $FIXIE_JOBID_FILE"""
     fjf = os.path.join(ENV.get('FIXIE_JOBS_DIR'), 'id')
     fjf = expand_file_and_mkdirs(fjf)
     return fjf
@@ -160,6 +162,7 @@ def context():
     """
     global _ENV_SETUP
     if _ENV_SETUP:
+        yield
         return
     setup()
     yield
