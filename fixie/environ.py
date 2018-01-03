@@ -1,6 +1,7 @@
 """Custom environment handling tools for fixie."""
 import os
 import builtins
+import multiprocessing
 from contextlib import contextmanager
 from collections import OrderedDict
 from collections.abc import MutableMapping
@@ -8,7 +9,7 @@ from collections.abc import MutableMapping
 from xonsh.environ import Ensurer, VarDocs
 from xonsh.tools import (is_string, ensure_string, always_false, always_true, is_bool,
                          is_string_set, csv_to_set, set_to_csv, is_nonstring_seq_of_strings,
-                         to_bool, bool_to_str, expand_path)
+                         to_bool, bool_to_str, expand_path, is_int)
 
 
 ENV = builtins.__xonsh_env__
@@ -111,6 +112,8 @@ ENVVARS = OrderedDict([
                         'Path to fixie jobs directory')),
     ('FIXIE_JOBID_FILE', (fixie_jobid_file, always_false, expand_file_and_mkdirs, ensure_string,
                           'Path to the fixie job file, which contains the next jobid.')),
+    ('FIXIE_NJOBS', (multiprocessing.cpu_count(), is_int, int, ensure_string,
+                     'Number of jobs allowed in parallel on this server.')),
     ('FIXIE_LOGFILE', (fixie_logfile, always_false, expand_file_and_mkdirs, ensure_string,
                        'Path to the fixie logfile.')),
     ('FIXIE_SIMS_DIR', (fixie_sims_dir, is_string, str, ensure_string,
