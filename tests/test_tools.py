@@ -11,7 +11,8 @@ import fixie.jsonutils as json
 from fixie.environ import ENV
 from fixie.request_handler import RequestHandler
 from fixie.tools import (fetch, verify_user_remote, verify_user_local, flock,
-    next_jobid, detached_call, waitpid, register_job_alias, jobids_from_alias)
+    next_jobid, detached_call, waitpid, register_job_alias, jobids_from_alias,
+    jobids_with_name)
 try:
     from fixie_creds.cache import CACHE
     HAVE_CREDS = True
@@ -130,6 +131,12 @@ def test_job_aliases(jobaliases):
     jids = jobids_from_alias('me', name='some-sim', project='myproj')
     assert jids == {1, 42}
     jids = jobids_from_alias('me', name='bad', project='nope')
+    assert jids == set()
+    # test from name
+    register_job_alias(43, 'you', name='some-sim', project='other')
+    jids = jobids_with_name('some-sim')
+    assert jids == {1, 42, 43}
+    jids = jobids_with_name('bad-name')
     assert jids == set()
 
 

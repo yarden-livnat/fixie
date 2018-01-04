@@ -195,7 +195,7 @@ def jobids_with_name(name, project='', timeout=None, sleepfor=0.1,
         else:
             return set()
         # add the entry as approriate
-        jobids = {}
+        jobids = set()
         for user in cache.values():
             for project in user.values():
                 j = project.get(name, None)
