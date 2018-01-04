@@ -177,6 +177,33 @@ def jobids_from_alias(user, name='', project='', timeout=None, sleepfor=0.1,
         return p[name]
 
 
+def jobids_with_name(name, project='', timeout=None, sleepfor=0.1,
+                    raise_errors=True):
+    """Obtains a set of job ids across all users and projects
+    that has a given name.
+    This looks up information in the the global jobs alias cache.
+    Returns a set of jobids.
+    """
+    f = ENV['FIXIE_JOB_ALIASES_FILE']
+    with flock(f, timeout=timeout, sleepfor=sleepfor, raise_errors=raise_errors) as lockfd:
+        if lockfd == 0:
+            return set()
+        # obtain the current contents
+        if os.path.isfile(f):
+            with open(f) as fh:
+                cache = json.load(fh)
+        else:
+            return set()
+        # add the entry as approriate
+        jobids = {}
+        for user in cache.values():
+            for project in user.values():
+                j = project.get(name, None)
+                if j is not None:
+                    jobids |= j
+    return jobids
+
+
 def detached_call(args, stdout=None, stderr=None, stdin=None, env=None, **kwargs):
     """Runs a process and detaches it from its parent (i.e. the current process).
     In the parent process, this will return the PID of the child. By default,
