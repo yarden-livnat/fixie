@@ -13,7 +13,7 @@ from xonsh.tools import (is_string, ensure_string, always_false, always_true, is
 
 
 ENV = builtins.__xonsh_env__
-SERVICES = frozenset(['creds'])
+SERVICES = frozenset(['creds', 'batch'])
 
 
 def csv_to_list(x):
