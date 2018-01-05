@@ -1,5 +1,6 @@
 """Standard fixie tools for dealing with JSON."""
 import json
+import base64
 from collections.abc import Set
 
 
@@ -7,6 +8,9 @@ def default(obj):
     """For custom object serialization."""
     if isinstance(obj, Set):
         return {'__set__': True, 'elements': sorted(obj)}
+    elif isinstance(obj, bytes):
+        return {'__bytes__': 'base64',
+                'value': base64.standard_b64encode(obj).decode('utf-8')}
     raise TypeError(repr(obj) + " is not JSON serializable")
 
 
@@ -14,6 +18,8 @@ def object_hook(dct):
     """For custom object deserialization."""
     if '__set__' in dct:
         return set(dct['elements'])
+    elif '__bytes__' in dct:
+        return base64.standard_b64decode(dct['value'].encode('utf-8')).decode('utf-8')
     return dct
 
 
