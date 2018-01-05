@@ -33,8 +33,6 @@ v0.0.3
 **Changed:**
 
 * Made the ``fixie.eviron.context()`` and related functions reentrant.
-None
-
 * ``ENVVARS`` is now an OrderedDict, in order to apply defaults in the
   correct order.
 

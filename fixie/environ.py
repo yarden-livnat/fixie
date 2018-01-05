@@ -107,6 +107,13 @@ def fixie_sims_dir():
     return fsd
 
 
+def fixie_paths_dir():
+    """Ensures and returns the $FIXIE_PATHS_DIR"""
+    fsd = os.path.join(ENV.get('FIXIE_DATA_DIR'), 'paths')
+    os.makedirs(fsd, exist_ok=True)
+    return fsd
+
+
 # key = name
 # value = (default, validate, convert, detype, docstr)
 # this needs to be ordered so that the default are applied in the correct order
@@ -123,12 +130,18 @@ ENVVARS = OrderedDict([
                                 expand_file_and_mkdirs, ensure_string,
                                 'Path to the fixie job names file, which contains '
                                 'aliases associated with users, projects, and jobids.')),
+    ('FIXIE_HOLDING_TIME', (float('inf'), is_float, float, ensure_string,
+                            'Length of time to store databases on the server.')),
     ('FIXIE_NJOBS', (multiprocessing.cpu_count(), is_int, int, ensure_string,
                      'Number of jobs allowed in parallel on this server.')),
     ('FIXIE_LOGFILE', (fixie_logfile, always_false, expand_file_and_mkdirs, ensure_string,
                        'Path to the fixie logfile.')),
     ('FIXIE_SIMS_DIR', (fixie_sims_dir, is_string, str, ensure_string,
-                        'Path to fixie simulations directory')),
+                        'Path to fixie simulations directory, where simulation '
+                        'objects are stored.')),
+    ('FIXIE_PATHS_DIR', (fixie_paths_dir, is_string, str, ensure_string,
+                        'Path to fixie paths directory, where database path metadata '
+                        'is stored.')),
     ])
 for service in SERVICES:
     key = 'FIXIE_' + service.upper() + '_URL'
