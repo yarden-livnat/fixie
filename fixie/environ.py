@@ -9,7 +9,7 @@ from collections.abc import MutableMapping
 from xonsh.environ import Ensurer, VarDocs
 from xonsh.tools import (is_string, ensure_string, always_false, always_true, is_bool,
                          is_string_set, csv_to_set, set_to_csv, is_nonstring_seq_of_strings,
-                         to_bool, bool_to_str, expand_path, is_int)
+                         to_bool, bool_to_str, expand_path, is_int, is_float)
 
 
 ENV = builtins.__xonsh_env__
