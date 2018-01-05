@@ -12,7 +12,7 @@ from fixie.environ import ENV
 from fixie.request_handler import RequestHandler
 from fixie.tools import (fetch, verify_user_remote, verify_user_local, flock,
     next_jobid, detached_call, waitpid, register_job_alias, jobids_from_alias,
-    jobids_with_name)
+    jobids_with_name, default_path)
 try:
     from fixie_creds.cache import CACHE
     HAVE_CREDS = True
@@ -151,3 +151,15 @@ def test_detached_call():
     assert 'FIXIE_DETACHED_CALL=test' in s
 
 
+@pytest.mark.parametrize('path, name, project, jobid, exp', [
+    ('x', '', '', -1, '/x'),
+    ('/y', '', '', -1, '/y'),
+    ('x/y', '', '', -1, '/x/y'),
+    ('/x/y/z', '', '', -1, '/x/y/z'),
+    ('', 'sim', '', -1, '/sim.h5'),
+    ('', 'sim', 'proj', -1, '/proj/sim.h5'),
+    ('', '', 'proj', 42, '/proj/42.h5'),
+])
+def test_default_path(path, name, project, jobid, exp):
+    obs = default_path(path, name=name, project=project, jobid=jobid)
+    assert exp == obs

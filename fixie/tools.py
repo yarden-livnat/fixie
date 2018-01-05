@@ -258,3 +258,29 @@ def waitpid(pid, timeout=None, sleepfor=0.001, raise_errors=True):
                 break
         time.sleep(sleepfor)
     return rtn
+
+
+def default_path(path, name='', project='', jobid=-1, ext='.h5'):
+    """Returns a default path name, depending on specified parameters."""
+    if path:
+        # deal with non-empty paths
+        if not path.startswith('/'):
+            path = '/' + path
+        return path
+    # deal with empty path names
+    path = '/'
+    if project:
+        path += project + '/'
+    if name:
+        path += name
+    elif isinstance(jobid, int):
+        if jobid < 0:
+            raise ValueError('jobid must be non-negative, got ' + str(jobid))
+        path += str(jobid)
+    elif isinstance(jobid, str):
+        path += jobid
+    else:
+        msg = 'name ({0!r}) and/or jobid ({1!r}) not recognized'
+        raise ValueError(msg.format(name, jobid))
+    path += ext
+    return path
