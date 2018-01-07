@@ -1,5 +1,6 @@
 """Standard fixie tools for dealing with JSON."""
 import json
+import uuid
 import base64
 from collections.abc import Set
 
@@ -11,6 +12,8 @@ def default(obj):
     elif isinstance(obj, bytes):
         return {'__bytes__': 'base64',
                 'value': base64.standard_b64encode(obj).decode('utf-8')}
+    elif isinstance(obj, uuid.UUID):
+        return {'__UUID__': True, 'value': str(obj)}
     raise TypeError(repr(obj) + " is not JSON serializable")
 
 
@@ -20,6 +23,8 @@ def object_hook(dct):
         return set(dct['elements'])
     elif '__bytes__' in dct:
         return base64.standard_b64decode(dct['value'].encode('utf-8'))
+    elif '__UUID__' in dct:
+        return uuid.UUID(dct['value'])
     return dct
 
 

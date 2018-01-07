@@ -1,4 +1,5 @@
 """Test fixie JSON utilities."""
+import uuid
 
 from fixie import jsonutils
 
@@ -18,4 +19,11 @@ def test_bytes():
     t = jsonutils.loads(obs)
     assert s == t
 
+
+def test_uuid():
+    u = uuid.uuid4()
+    obs = jsonutils.dumps(u)
+    assert '__UUID__' in obs
+    v = jsonutils.loads(obs)
+    assert u == v
 
