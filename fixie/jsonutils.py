@@ -19,7 +19,7 @@ def object_hook(dct):
     if '__set__' in dct:
         return set(dct['elements'])
     elif '__bytes__' in dct:
-        return base64.standard_b64decode(dct['value'].encode('utf-8')).decode('utf-8')
+        return base64.standard_b64decode(dct['value'].encode('utf-8'))
     return dct
 
 
