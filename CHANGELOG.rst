@@ -4,6 +4,32 @@ fixie Change Log
 
 .. current developments
 
+v0.0.4
+====================
+
+**Added:**
+
+* Added support for JSON to persist Python bytes as base64 strings.
+* Added support for JSON to persist UUIDs.
+* ``fixie.default_path()`` function enables the creation of path names
+  from metadata, if needed.
+* ``$FIXIE_HOLDING_TIME`` added for specifying the
+  length of time to store databases on the server.
+* ``$FIXIE_PATHS_DIR`` for denoting the fixie paths
+  directory, where database path metadata is stored.
+
+
+**Changed:**
+
+* ``RequestHandler.write()`` now uses the ``fixie.jsonutils.encode()`` to
+  encode dictionaries as JSON. Additionally, a newline is appended to the
+  end of the message, so that curl and other utilities look nice on the
+  command line.
+* ``fixie`` command line utility now has executable permissions.
+
+
+
+
 v0.0.3
 ====================
 
