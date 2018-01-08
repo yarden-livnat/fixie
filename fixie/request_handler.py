@@ -1,7 +1,7 @@
 """A request handler for fixie that expects JSON data and validates it."""
-
-import tornado.web
 import cerberus
+import tornado.web
+from tornado.escape import utf8
 
 import fixie.jsonutils as json
 
@@ -41,6 +41,24 @@ class RequestHandler(tornado.web.RequestHandler):
 
     def set_default_headers(self):
         self.set_header('Content-Type', 'application/json')
+
+    def write(self, chunk):
+        """Writes the given chunk to the output buffer. This overrides (and almost
+        completely reimplements) ``tornado.web.RequestHandler.write() so that we
+        can use the default fixie JSON tools.
+        """
+        if self._finished:
+            raise RuntimeError("Cannot write() after finish()")
+        if not isinstance(chunk, (bytes, str, dict)):
+            message = "write() only accepts bytes, unicode, and dict objects"
+            if isinstance(chunk, list):
+                message += ". Lists not accepted for security reasons; see http://www.tornadoweb.org/en/stable/web.html#tornado.web.RequestHandler.write"
+            raise TypeError(message)
+        if isinstance(chunk, dict):
+            chunk = json.encode(chunk) + '\n'
+            self.set_header("Content-Type", "application/json; charset=UTF-8")
+        chunk = utf8(chunk)
+        self._write_buffer.append(chunk)
 
     def write_error(self, status_code, **kwargs):
         if 'message' not in kwargs:
