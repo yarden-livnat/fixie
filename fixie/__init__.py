@@ -21,7 +21,7 @@ else:
     del xonsh, builtins, Execer, Shell
 
 
-__version__ = '0.0.3'
+__version__ = '0.0.4'
 
 
 import fixie.jsonutils as json
