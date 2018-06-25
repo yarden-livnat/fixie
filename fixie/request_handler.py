@@ -13,6 +13,14 @@ class RequestHandler(tornado.web.RequestHandler):
     This class is meant to be subclassed.
     """
 
+    def get_current_user(self):
+        try:
+            return self.get_secure_cookie('user')
+        except Exception:
+            self.set_status(401)
+            self.finish('unauthorized')
+            raise tornado.web.Finish
+
     @property
     def validator(self):
         v = getattr(self.__class__, '_validator', None)

@@ -12,6 +12,12 @@ from fixie.logger import LOGGER
 
 ALL_SERVICES = SERVICES | frozenset(['all'])
 
+SETTINGS = dict(
+    cookie_secret = '__TODO__: Generate a random value',
+    #xsrf+cookies = True,
+    debug = True
+)
+
 
 def parse_services(args):
     """Parses out the service names, and returns them as a set."""
@@ -88,10 +94,12 @@ def run_application(ns):
         mod = importlib.import_module(name)
         handlers.extend(mod.HANDLERS)
     # construct the app
-    app = tornado.web.Application(handlers)
+    # app = tornado.web.Application(handlers)
+    app = tornado.web.Application(handlers, **SETTINGS)
     serv = app.listen(ns.port)
     data = vars(ns)
     url = 'http://localhost:' + str(ns.port)
+    LOGGER.log('debuging fixie')
     LOGGER.log('starting fixie ' + url, category='server', data=data)
     try:
         tornado.ioloop.IOLoop.current().start()

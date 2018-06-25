@@ -28,7 +28,7 @@ setup_kwargs = {
     "scripts": ["scripts/fixie"],
     }
 if HAVE_SETUPTOOLS:
-    setup_kwargs['install_requires'] = ['xonsh', 'cerberus', 'tornado', 'lazyasd']
+    setup_kwargs['install_requires'] = ['xonsh', 'cerberus', 'tornado', 'lazyasd', 'pytest']
 
 if __name__ == '__main__':
     setup(
