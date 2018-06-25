@@ -4,7 +4,9 @@ import time
 import errno
 import subprocess
 import multiprocessing
+import base64
 from contextlib import contextmanager
+from pathlib import Path
 
 import tornado.gen
 import tornado.ioloop
@@ -284,3 +286,17 @@ def default_path(path, name='', project='', jobid=-1, ext='.h5'):
         raise ValueError(msg.format(name, jobid))
     path += ext
     return path
+
+def cookie_secret():
+    secret = None
+    p = Path(ENV['FIXIE_COOKIE_SECRET_FILE'])
+    if p.exists():
+        with open(p, 'r') as f:
+            secret = f.read()
+    if secret is None or len(secret) != 50:
+        secret = base64.b64encode(os.urandom(50)).decode('ascii')
+        with open(p, 'w') as f:
+            f.write(secret)
+        p.chmod(0o600)
+    print('secret:', secret)
+    return secret

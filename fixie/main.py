@@ -8,12 +8,13 @@ import tornado.ioloop
 
 from fixie.environ import ENV, ENVVARS, SERVICES, context
 from fixie.logger import LOGGER
+from fixie.tools import cookie_secret
 
 
 ALL_SERVICES = SERVICES | frozenset(['all'])
 
 SETTINGS = dict(
-    cookie_secret = '__TODO__: Generate a random value',
+    cookie_secret = None, # must be loaded from a config file
     #xsrf+cookies = True,
     debug = True
 )
@@ -84,7 +85,6 @@ def set_envvars(ns):
             continue
         ENV[name] = val
 
-
 def run_application(ns):
     """Starts up an application with the loaded services."""
     # first, find the request handler
@@ -95,6 +95,7 @@ def run_application(ns):
         handlers.extend(mod.HANDLERS)
     # construct the app
     # app = tornado.web.Application(handlers)
+    SETTINGS['cookie_secret'] = cookie_secret()
     app = tornado.web.Application(handlers, **SETTINGS)
     serv = app.listen(ns.port)
     data = vars(ns)
