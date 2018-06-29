@@ -120,6 +120,14 @@ def fixie_cookie_secret_file():
     f = expand_file_and_mkdirs(f)
     return f
 
+
+def fixie_certs_dir():
+    """Ensures and returns the $FIXIE_CERTS_DIR"""
+    fsd = os.path.join(ENV.get('FIXIE_CONFIG_DIR'), 'certs')
+    os.makedirs(fsd, exist_ok=True)
+    return fsd
+
+
 # key = name
 # value = (default, validate, convert, detype, docstr)
 # this needs to be ordered so that the default are applied in the correct order
@@ -148,8 +156,9 @@ ENVVARS = OrderedDict([
     ('FIXIE_PATHS_DIR', (fixie_paths_dir, is_string, str, ensure_string,
                         'Path to fixie paths directory, where database path metadata '
                         'is stored.')),
-    ('FIXIE_COOKIE_SECRET_FILE', (fixie_cookie_secret_file, is_string, str, ensure_string, 'Path to cookie secret file'))
-    ])
+    ('FIXIE_COOKIE_SECRET_FILE', (fixie_cookie_secret_file, is_string, str, ensure_string, 'Path to cookie secret file')),
+    ('FIXIE_CERT_DIR', (fixie_certs_dir, is_string, str, ensure_string, 'Path to fixie certificate directory')),
+])
 for service in SERVICES:
     key = 'FIXIE_' + service.upper() + '_URL'
     ENVVARS[key] = ('', is_string, str, ensure_string,

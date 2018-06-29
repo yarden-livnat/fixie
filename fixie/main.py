@@ -1,5 +1,7 @@
 """Main function for fixie."""
 import sys
+import os
+import ssl
 import argparse
 import importlib
 
@@ -85,6 +87,7 @@ def set_envvars(ns):
             continue
         ENV[name] = val
 
+
 def run_application(ns):
     """Starts up an application with the loaded services."""
     # first, find the request handler
@@ -94,10 +97,15 @@ def run_application(ns):
         mod = importlib.import_module(name)
         handlers.extend(mod.HANDLERS)
     # construct the app
-    # app = tornado.web.Application(handlers)
     SETTINGS['cookie_secret'] = cookie_secret()
     app = tornado.web.Application(handlers, **SETTINGS)
-    serv = app.listen(ns.port)
+
+    ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    ssl_ctx.load_cert_chain(os.path.join(ENV['FIXIE_CERT_DIR'], 'ca.pem'),
+                            os.path.join(ENV['FIXIE_CERT_DIR'], 'ca.key'))
+    server = tornado.httpserver.HTTPServer(app) #, ssl_options=ssl_ctx)
+
+    server.listen(ns.port)
     data = vars(ns)
     url = 'http://localhost:' + str(ns.port)
     LOGGER.log('debuging fixie')

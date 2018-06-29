@@ -1,25 +1,9 @@
 """A request handler for fixie that expects JSON data and validates it."""
 import cerberus
 import tornado.web
-import functools
 from tornado.escape import utf8
 
 import fixie.jsonutils as json
-
-
-def authenticated(method):
-    """Decorate methods with this to require that the user be logged in.
-
-    Ensure use is logged in. Otherwise, sends Unauthorized reply.
-    """
-    @functools.wraps(method)
-    def wrapper(self, *args, **kwargs):
-        if not self.current_user:
-            self.set_status(401)
-            self.finish('Unauthorized')
-            raise tornado.web.Finish
-        return method(self, *args, **kwargs)
-    return wrapper
 
 
 class RequestHandler(tornado.web.RequestHandler):
@@ -30,19 +14,10 @@ class RequestHandler(tornado.web.RequestHandler):
     """
 
     def get_current_user(self):
-        return self.get_secure_cookie('user')
-        # if user is not None:
-        #     return user
-        # else:
-        #     self.set_status(401)
-        #     self.finish('unauthorized')
-        #     raise tornado.web.Finish
-        # try:
-        #     return self.get_secure_cookie('user')
-        # except Exception:
-        #     self.set_status(401)
-        #     self.finish('unauthorized')
-        #     raise tornado.web.Finish
+        user = self.get_secure_cookie('user')
+        if user:
+            user = user.decode('UTF-8')
+        return user
 
     @property
     def validator(self):

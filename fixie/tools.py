@@ -287,6 +287,7 @@ def default_path(path, name='', project='', jobid=-1, ext='.h5'):
     path += ext
     return path
 
+
 def cookie_secret():
     secret = None
     p = Path(ENV['FIXIE_COOKIE_SECRET_FILE'])
@@ -298,5 +299,4 @@ def cookie_secret():
         with open(p, 'w') as f:
             f.write(secret)
         p.chmod(0o600)
-    print('secret:', secret)
     return secret
